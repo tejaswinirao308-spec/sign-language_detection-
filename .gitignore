@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.idea/
+backup_before_clean_rebuild/
+backup_before_internship_rebuild_20260830/
+debug/
+logs/
+data/
+*.log
+
+# Models are ignored by default; the small, validated runtime checkpoints and
+# their metrics are added explicitly for a reproducible internship demo.
+models/*

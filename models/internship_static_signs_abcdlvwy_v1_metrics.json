@@ -1,0 +1,101 @@
+{
+  "labels": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "L",
+    "V",
+    "W",
+    "Y"
+  ],
+  "available_per_class": {
+    "A": 3000,
+    "B": 3000,
+    "C": 3000,
+    "D": 3000,
+    "L": 3000,
+    "V": 3000,
+    "W": 3000,
+    "Y": 3000
+  },
+  "all_valid_images_used": true,
+  "split_manifest": "models\\internship_static_signs_abcdlvwy_v1_split_manifest.json",
+  "split_policy": "GroupShuffleSplit by SHA-256 image hash, 80/10/10 per class",
+  "duplicate_images": 0,
+  "split_before_detection": {
+    "train": 19200,
+    "validation": 2400,
+    "test": 2400
+  },
+  "usable_after_detection": {
+    "train": 15848,
+    "validation": 1987,
+    "test": 1956
+  },
+  "skipped_no_hand": {
+    "train": 3352,
+    "validation": 413,
+    "test": 444
+  },
+  "training_augmentation": "30% mild landmark rotation/scale/jitter on training samples only",
+  "training_samples_after_augmentation": 20602,
+  "validation_accuracy": 0.9934574735782586,
+  "test_accuracy": 0.9923312883435583,
+  "macro_precision": 0.9920641424033324,
+  "macro_recall": 0.9924617250789636,
+  "macro_f1": 0.9922473697567017,
+  "model": "StandardScaler + RBF SVC on canonical MediaPipe hand landmarks",
+  "end_to_end_test_accuracy": 0.9872188139059305,
+  "end_to_end_detected_test_samples": 1956,
+  "end_to_end_per_class": {
+    "A": {
+      "test_samples": 300,
+      "detected": 210,
+      "correct": 207,
+      "accuracy": 0.9857142857142858
+    },
+    "B": {
+      "test_samples": 300,
+      "detected": 225,
+      "correct": 223,
+      "accuracy": 0.9911111111111112
+    },
+    "C": {
+      "test_samples": 300,
+      "detected": 196,
+      "correct": 194,
+      "accuracy": 0.9897959183673469
+    },
+    "D": {
+      "test_samples": 300,
+      "detected": 266,
+      "correct": 263,
+      "accuracy": 0.9887218045112782
+    },
+    "L": {
+      "test_samples": 300,
+      "detected": 273,
+      "correct": 269,
+      "accuracy": 0.9853479853479854
+    },
+    "V": {
+      "test_samples": 300,
+      "detected": 271,
+      "correct": 267,
+      "accuracy": 0.985239852398524
+    },
+    "W": {
+      "test_samples": 300,
+      "detected": 253,
+      "correct": 251,
+      "accuracy": 0.9920948616600791
+    },
+    "Y": {
+      "test_samples": 300,
+      "detected": 262,
+      "correct": 257,
+      "accuracy": 0.9809160305343512
+    }
+  }
+}

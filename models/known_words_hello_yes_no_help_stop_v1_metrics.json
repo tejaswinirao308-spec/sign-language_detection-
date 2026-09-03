@@ -1,0 +1,110 @@
+{
+  "classes": [
+    "Hello",
+    "Yes",
+    "No",
+    "Help",
+    "Stop"
+  ],
+  "source": "Realtime_ASL_RasPi public training_data.tar; extracted five labels only",
+  "source_video_root": "D:\\SignLanguageDatasets\\realtime_asl_5words\\selected\\Video_Data",
+  "preprocessing": "OpenCV BGR frames -> MediaPipe Hands (two hand slots) -> handedness-canonical, wrist/scale-normalized 126-D features -> uniformly sampled 16-frame sequence",
+  "grouping": "same leading numeric filename group kept in one split",
+  "sequence_length": 16,
+  "features_per_frame": 126,
+  "minimum_detected_frames": 10,
+  "confidence_threshold": 0.5,
+  "raw_unique_clip_counts": {
+    "Hello": 180,
+    "Yes": 180,
+    "No": 180,
+    "Help": 180,
+    "Stop": 180
+  },
+  "raw_independent_group_counts": {
+    "Hello": 60,
+    "Yes": 60,
+    "No": 60,
+    "Help": 60,
+    "Stop": 60
+  },
+  "usable_clip_counts": {
+    "Hello": 78,
+    "Yes": 60,
+    "No": 62,
+    "Help": 79,
+    "Stop": 70
+  },
+  "usable_independent_group_counts": {
+    "Hello": 30,
+    "Yes": 30,
+    "No": 30,
+    "Help": 30,
+    "Stop": 30
+  },
+  "split_counts": {
+    "train": {
+      "Hello": 56,
+      "Yes": 42,
+      "No": 43,
+      "Help": 53,
+      "Stop": 44
+    },
+    "validation": {
+      "Hello": 9,
+      "Yes": 8,
+      "No": 8,
+      "Help": 11,
+      "Stop": 11
+    },
+    "test": {
+      "Hello": 13,
+      "Yes": 10,
+      "No": 11,
+      "Help": 15,
+      "Stop": 15
+    }
+  },
+  "epochs_completed": 19,
+  "best_validation_accuracy": 1.0,
+  "held_out_test_accuracy": 1.0,
+  "held_out_macro_f1": 1.0,
+  "per_class": {
+    "Hello": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "test_samples": 13,
+      "accuracy": 1.0
+    },
+    "Yes": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "test_samples": 10,
+      "accuracy": 1.0
+    },
+    "No": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "test_samples": 11,
+      "accuracy": 1.0
+    },
+    "Help": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "test_samples": 15,
+      "accuracy": 1.0
+    },
+    "Stop": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "test_samples": 15,
+      "accuracy": 1.0
+    }
+  },
+  "ready": true
+}

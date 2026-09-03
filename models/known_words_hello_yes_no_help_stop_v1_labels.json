@@ -1,0 +1,12 @@
+{
+  "classes": [
+    "Hello",
+    "Yes",
+    "No",
+    "Help",
+    "Stop"
+  ],
+  "sequence_length": 16,
+  "features_per_frame": 126,
+  "threshold": 0.5
+}
