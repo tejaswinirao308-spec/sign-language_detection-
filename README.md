@@ -1,102 +1,93 @@
-# Sign Language Detection System
+# Sign Language Detection
 
-A compact Windows CPU project built for the internship task. It recognises a
-small, verified set of static signs with one MediaPipe-landmark + SVM model.
-The available local dataset contains alphabet labels only, so the app supports
-the eight real labels selected from it: **A, B, F, I, L, V, W, Y**. It does not
-pretend to recognise word labels that are not present in the dataset.
+Windows CPU-friendly Streamlit application prepared for the internship task:
+train a sign-language model, recognise selected known words, provide uploaded
+image and real-time video inputs, and restrict prediction to 6:00 PM–10:00 PM
+local time.
 
-## What it does
+## Features
 
-- Upload a JPG, JPEG, or PNG and receive a hand box, sign prediction, and real confidence.
-- Use the browser webcam through Streamlit WebRTC. The same inference function
-  used for uploads handles every video frame, then confirms a label after six
-  consecutive confident frames.
-- Shows `Unknown Sign` for low-confidence input and a no-hand message when
-  MediaPipe cannot find a hand.
-- Enforces the required local-time operating window: **6:00 PM–10:00 PM**.
-  Outside that window the interface remains visible but prediction and webcam
-  detection are disabled.
+- **A–Z Alphabet mode:** a validated static-sign subset: **A, B, C, D, L, V,
+  W, Y**. These are the eight labels with adequate images in the selected
+  training subset; unsupported letters are reported as `Unknown Sign`.
+- **Known Words mode:** temporal recognition of **Hello, Yes, No, Help, Stop**.
+  It uses real MediaPipe hand-landmark sequences, so a word prediction is made
+  only from a webcam sequence or uploaded video—not from a single screenshot.
+- **Upload image:** detects a hand, draws its bounding box, and returns the
+  predicted static sign and genuine model confidence.
+- **Real-time webcam:** browser WebRTC video, hand bounding box, confidence,
+  and multi-frame smoothing to reduce flicker.
+- **Unknown handling:** low-confidence or unsupported gestures are never
+  forced into a class.
+- **Access window:** prediction and webcam processing are enabled only from
+  **6:00 PM to 10:00 PM** local time. The GUI stays visible outside that window
+  and shows the availability message.
 
-## Dataset and split
+## Models and measured evaluation
 
-Training uses only:
+| Mode | Checkpoint | Held-out result |
+| --- | --- | --- |
+| Static alphabet subset | `models/internship_static_signs_abcdlvwy_v1.joblib` | 98.72% end-to-end accuracy on 1,956 detected untouched test images; 99.22% classifier accuracy after hand detection |
+| Known words | `models/known_words_hello_yes_no_help_stop_v1.keras` | 100.00% held-out accuracy / 1.000 macro F1 on 64 held-out source clips |
 
-`data/asl_alphabet/train/{A,B,F,I,L,V,W,Y}`
+The known-word score is a result on the source dataset's held-out clips. It is
+not a promise of identical accuracy for every webcam, signer, background, or
+lighting condition. The app displays `Unknown Sign` when the genuine
+probability does not meet the saved confidence criterion.
 
-The trainer counts every source image, then chooses 500 deterministic images
-per class and makes stratified 80% / 10% / 10% train, validation, and untouched
-test partitions before extracting landmarks. It writes the exact sample counts,
-held-out metrics, classification report, and confusion matrix to `models/`.
+## Data and leakage controls
 
-## Setup and training (Windows PowerShell)
+The static-sign trainer uses all valid images from the selected eight A–Z
+classes (3,000 source images per class). It applies a SHA-256 image-hash split
+before detection: 80% train, 10% validation, and 10% untouched test. Duplicate
+images across the partitions are rejected.
+
+Known-word training uses 16 uniformly sampled MediaPipe landmark frames per
+clip and keeps independent source-video groups in only one partition. Its
+metrics, class labels, and confusion matrix are stored alongside the checkpoint.
+
+## Run on Windows
 
 ```powershell
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
-.\.venv\Scripts\python.exe scripts\train_internship_static_signs.py
-```
-
-The final trainer only promotes a checkpoint after it has evaluated the
-untouched test partition. Its artifacts are:
-
-- `models/internship_static_signs.joblib`
-- `models/internship_static_signs_labels.json`
-- `models/internship_static_signs_metrics.json`
-- `models/internship_static_signs_report.json`
-- `models/internship_static_signs_confusion.csv`
-
-Start the dashboard with the project interpreter:
-
-```powershell
 .\run_app.ps1
 ```
 
-or:
+Or run directly:
 
 ```powershell
 .\.venv\Scripts\python.exe -m streamlit run app.py
 ```
 
-The app uses no NVIDIA/CUDA requirement. PyAV is included because
-`streamlit-webrtc` receives webcam frames as `av.VideoFrame` objects.
+No CUDA or NVIDIA GPU is required.
 
-## Four-word landmark collection: Hello, Help, Yes, No
+## Retraining
 
-The supplied reference pictures are deliberately **not** copied into the
-training set. They are single screenshots with visible word text, so training
-on them would leak labels and would not teach a model the sign motion.
-
-The dedicated collector stores only 30-frame MediaPipe two-hand landmark
-sequences in `data/known_words_hello_help_yes_no/`. Each saved sample has a
-unique capture ID, an operator-confirmed label, a preprocessing version, and a
-content fingerprint that rejects exact duplicate sequences. Stop Streamlit
-before collecting because the collector must own the webcam.
-
-Collect 30–50 independent performances for each word (40 is a good target):
+Static alphabet subset:
 
 ```powershell
-.\.venv\Scripts\python.exe scripts\collect_four_word_landmarks.py --label Hello --samples 40 --confirm --automatic
-.\.venv\Scripts\python.exe scripts\collect_four_word_landmarks.py --label Help --samples 40 --confirm --automatic
-.\.venv\Scripts\python.exe scripts\collect_four_word_landmarks.py --label Yes --samples 40 --confirm --automatic
-.\.venv\Scripts\python.exe scripts\collect_four_word_landmarks.py --label No --samples 40 --confirm --automatic
+.\.venv\Scripts\python.exe scripts\train_internship_static_signs.py
 ```
 
-Press `A` in the collector to start the automatic takes, change the gesture or
-camera position a little between takes, and press `Q` to stop. It refuses to
-save a take with fewer than 10 detected hand frames.
-
-After every class has at least 30 valid independent sequences, train and
-evaluate the separate CPU GRU model:
+For a separate four-word self-collected model (**Hello, Help, Yes, No**), first
+capture at least 30 independent real sequences per word using
+`scripts/collect_four_word_landmarks.py`, then run:
 
 ```powershell
 .\.venv\Scripts\python.exe scripts\train_collected_known_words.py
 ```
 
-The trainer makes a stratified 70/15/15 train/validation/untouched-test split
-by capture ID. It saves the model, labels, manifest, metrics, classification
-report, and confusion matrix under `models/known_words_hello_help_yes_no_v1*`.
-It will not start with missing or duplicate data, and the dashboard only
-enables this four-word checkpoint after its saved held-out metrics pass the
-readiness gate. A static image is previewed but never
-used to make a fake dynamic-word prediction; upload a short video or use the
-webcam for the landmark-sequence model.
+The collector stores landmark sequences only; it does not manufacture labels
+or use reference screenshots as training data.
+
+## Project layout
+
+```text
+app.py                         Streamlit interface
+src/internship_pipeline.py     Shared static sign detection/inference
+src/vision.py                  Temporal word-sequence preprocessing
+scripts/                       Collection and training scripts
+models/                        Versioned trained checkpoints and metrics
+requirements.txt               Windows CPU dependencies
+run_app.ps1                    Project launcher
+```
