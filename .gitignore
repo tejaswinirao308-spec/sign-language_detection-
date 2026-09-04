@@ -10,6 +10,15 @@ logs/
 data/
 *.log
 
+# Local deliverables, samples, and one-off investigation/training scripts are
+# retained on this computer or in Google Drive.  The tracked scripts are the
+# reproducible workflows documented in README.md.
+artifacts/
+sample_images/
+scripts/*
+src/inference.py
+src/public_word_pipeline.py
+
 # Models are ignored by default; the small, validated runtime checkpoints and
 # their metrics are added explicitly for a reproducible internship demo.
 models/*
